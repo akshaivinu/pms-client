@@ -9,18 +9,26 @@ const publicPaths = ["/login", "/register", "/forgot-password"];
 export default function AuthGate({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [checking, setChecking] = useState(true);
-  const [accessDenied, setAccessDenied] = useState(false);
   const isPublic = publicPaths.includes(pathname);
+
+  const [prevPath, setPrevPath] = useState(pathname);
+  const [checking, setChecking] = useState(!isPublic);
+  const [accessDenied, setAccessDenied] = useState(false);
+
+  if (prevPath !== pathname) {
+    setPrevPath(pathname);
+    setChecking(!isPublic);
+    setAccessDenied(false);
+  }
 
   useEffect(() => {
     if (isPublic) {
-      setChecking(false);
       return;
     }
     let redirectTimer: number | undefined;
     const denyAccess = () => {
       setAccessDenied(true);
+      setChecking(false);
       redirectTimer = window.setTimeout(() => router.replace("/login"), 700);
     };
     const checkpoint = () => api.auth.me().then((result) => {

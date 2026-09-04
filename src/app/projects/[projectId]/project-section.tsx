@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { api, unwrap } from "../../../lib/api";
 
 type RecordItem = Record<string, unknown>;
@@ -14,6 +14,7 @@ export default function ProjectSection({
   section?: string;
 }) {
   const { projectId } = useParams<{ projectId: string }>();
+  const router = useRouter();
   const [project, setProject] = useState<RecordItem | null>(null);
   const [items, setItems] = useState<RecordItem[]>([]);
   const [members, setMembers] = useState<RecordItem[]>([]);
@@ -291,6 +292,70 @@ export default function ProjectSection({
     }
   }
 
+  async function removeProjectMember(userId: string) {
+    if (!projectId) return;
+    if (!window.confirm("Remove this member from the project?")) return;
+    try {
+      await api.projects.removeMember(projectId, userId);
+      setItems((current) =>
+        current.filter((member) => {
+          const userObj = (member.user_id ?? member) as RecordItem;
+          return String(userObj._id ?? userObj.id) !== userId;
+        }),
+      );
+      setMembers((current) =>
+        current.filter((member) => {
+          const userObj = (member.user_id ?? member) as RecordItem;
+          return String(userObj._id ?? userObj.id) !== userId;
+        }),
+      );
+      setMessage("Member removed from project.");
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : "Could not remove member.");
+    }
+  }
+
+  async function changeProjectRole(userId: string, newRole: string) {
+    if (!projectId) return;
+    try {
+      await api.projects.updateMember(projectId, userId, { projectRole: newRole });
+      setItems((current) =>
+        current.map((member) => {
+          const userObj = (member.user_id ?? member) as RecordItem;
+          return String(userObj._id ?? userObj.id) === userId
+            ? { ...member, project_role: newRole }
+            : member;
+        }),
+      );
+      setMessage("Member role updated.");
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : "Could not update role.");
+    }
+  }
+
+  async function archiveProject() {
+    if (!projectId) return;
+    try {
+      const res = await api.projects.archive(projectId);
+      const updated = unwrap(res, null) as RecordItem | null;
+      if (updated) setProject(updated);
+      setMessage("Project archived.");
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : "Could not archive project.");
+    }
+  }
+
+  async function deleteProject() {
+    if (!projectId) return;
+    if (!window.confirm("Are you sure you want to delete this project? This cannot be undone.")) return;
+    try {
+      await api.projects.delete(projectId);
+      router.push("/projects");
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : "Could not delete project.");
+    }
+  }
+
   const title =
     section === "overview"
       ? String(project?.name ?? "Project")
@@ -388,6 +453,21 @@ export default function ProjectSection({
                   View workflow →
                 </Link>
               </div>
+              {canManageWorkflow && (
+                <div style={{ marginTop: "20px", display: "flex", gap: "10px", alignItems: "center" }}>
+                  <button className="outline-button" type="button" onClick={archiveProject}>
+                    Archive project
+                  </button>
+                  <button
+                    className="text-button"
+                    type="button"
+                    style={{ color: "var(--coral)", fontSize: "12px" }}
+                    onClick={deleteProject}
+                  >
+                    Delete project
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ) : section === "tasks" ? (
@@ -435,6 +515,66 @@ export default function ProjectSection({
             })}
             {canManageWorkflow && <form className="inline-form" onSubmit={createStage}><input value={stageName} onChange={(event) => setStageName(event.target.value)} placeholder="New stage name" /><button className="primary-button" type="submit">+ Add stage</button></form>}
           </section>
+        ) : section === "members" ? (
+          <div className="detail-list">
+            {items.map((item, index) => {
+              const userObj = ((item as { user_id?: RecordItem }).user_id ?? item) as RecordItem;
+              const memberUserId = String(userObj._id ?? userObj.id ?? "");
+              const currentProjectRole = String(item.project_role ?? "TEAM_MEMBER");
+              return (
+                <article
+                  key={memberUserId || idOf(item) || index}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "16px 4px",
+                    borderBottom: "1px solid var(--line)",
+                  }}
+                >
+                  <div>
+                    <strong>{String(userObj.name ?? userObj.email ?? `Member ${index + 1}`)}</strong>
+                    <small style={{ display: "block", color: "var(--muted)", marginTop: "2px" }}>
+                      {String(userObj.email ?? "")}
+                    </small>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    {canManageWorkflow ? (
+                      <select
+                        value={currentProjectRole}
+                        onChange={(e) => changeProjectRole(memberUserId, e.target.value)}
+                        aria-label={`Project role for ${String(userObj.name ?? userObj.email)}`}
+                        style={{
+                          border: "1px solid var(--line)",
+                          borderRadius: "6px",
+                          padding: "5px 8px",
+                          background: "#fff",
+                          fontSize: "12px",
+                          color: "var(--ink)",
+                        }}
+                      >
+                        <option value="TEAM_MEMBER">Team Member</option>
+                        <option value="PROJECT_MANAGER">Project Manager</option>
+                      </select>
+                    ) : (
+                      <small style={{ fontWeight: 600 }}>{currentProjectRole}</small>
+                    )}
+                    {canManageWorkflow && (
+                      <button
+                        type="button"
+                        className="text-button"
+                        style={{ color: "var(--coral)", fontSize: "12px" }}
+                        onClick={() => removeProjectMember(memberUserId)}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+            {items.length === 0 && <p className="empty-state">No members assigned to this project.</p>}
+          </div>
         ) : (
           <div className="detail-list">
             {items.map((item, index) => (
