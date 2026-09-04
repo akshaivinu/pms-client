@@ -33,12 +33,16 @@ export default function Home() {
   const [taskTitle, setTaskTitle] = useState("");
   const [taskPriority, setTaskPriority] = useState("medium");
   const [taskDueDate, setTaskDueDate] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [notice, setNotice] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const showingTasks = searchParams.get("view") === "tasks";
   const selectedProject =
     projects.find((project) => itemId(project) === selectedId) ?? projects[0];
+  const filteredTasks = searchQuery
+    ? tasks.filter((t) => String(t.title ?? "").toLowerCase().includes(searchQuery.toLowerCase()))
+    : tasks;
 
   useEffect(() => {
     api.auth
@@ -190,14 +194,19 @@ export default function Home() {
             <strong>{selectedProject?.name ?? "Projects"}</strong>
           </div>
           <div className="top-actions">
-            <button className="search">
-              ⌕ <span>Search anything</span>
-              <kbd>⌘ K</kbd>
-            </button>
-            <button className="circle-button">?</button>
-            <button className="notification">
-              ♧<i />
-            </button>
+            <div className="search" style={{ position: "relative" }}>
+              <span>⌕</span>
+              <input
+                type="text"
+                placeholder="Search tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ border: "none", background: "transparent", outline: "none", fontSize: "13px", color: "var(--ink)", width: "160px" }}
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery("")} style={{ position: "absolute", right: 8, background: "none", border: "none", cursor: "pointer", color: "var(--muted)", fontSize: "14px" }}>×</button>
+              )}
+            </div>
           </div>
         </header>
         <section className="content-wrap">
@@ -335,67 +344,29 @@ export default function Home() {
           )}
           <div className="section-row task-header">
             <div>
-              <h2>Task board</h2>
+              <h2>Tasks</h2>
               <p>
-                {tasks.length} tasks in{" "}
+                {filteredTasks.length} tasks in{" "}
                 {selectedProject?.name ?? "this project"}
               </p>
             </div>
-            <div className="view-toggle">
-              <button className="selected">Board</button>
-              <button>List</button>
-            </div>
+            <button className="primary-button" onClick={() => setShowTaskForm(true)} disabled={!selectedId}>+ Add task</button>
           </div>
-          <section className="task-board">
-            {["To do", "In progress", "In review", "Done"].map(
-              (stage, stageIndex) => (
-                <div className="task-column" key={stage}>
-                  <div className="column-heading">
-                    <span>
-                      <i className={`stage-dot stage-${stageIndex}`} />
-                      {stage}
-                    </span>
-                    <b>{stageIndex === 0 ? tasks.length : 0}</b>
+          <div className="detail-list">
+            {filteredTasks.map((task) => (
+              <article key={itemId(task)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 4px", borderBottom: "1px solid var(--line)" }}>
+                <div>
+                  <strong style={{ fontSize: "14px" }}>{String(task.title ?? "Task")}</strong>
+                  {task.description && <small style={{ display: "block", color: "var(--muted)", marginTop: "4px" }}>{String(task.description ?? "").slice(0, 80)}</small>}
+                  <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+                    <span style={{ fontSize: "10px", padding: "3px 8px", borderRadius: "10px", fontWeight: 700, background: "#fbf0d5", color: "#bd8b2d", textTransform: "uppercase" }}>{String(task.priority ?? "medium")}</span>
+                    {task.due_date && <span style={{ fontSize: "11px", color: "var(--muted)" }}>Due {new Date(task.due_date).toLocaleDateString()}</span>}
                   </div>
-                  {stageIndex === 0 &&
-                    tasks.map((task) => (
-                      <article className="task-card" key={itemId(task)}>
-                        <div className="task-card-top">
-                          <span
-                            className={`priority ${task.priority ?? "medium"}`}
-                          >
-                            {task.priority ?? "medium"}
-                          </span>
-                          <button>•••</button>
-                        </div>
-                        <h4>{task.title}</h4>
-                        {task.description && <p>{task.description}</p>}
-                        <div className="task-meta">
-                          <span>
-                            ◷{" "}
-                            {task.due_date
-                              ? new Date(task.due_date).toLocaleDateString()
-                              : "No due date"}
-                          </span>
-                          <span className="avatar tiny">
-                            {user?.name?.slice(0, 2).toUpperCase() ?? "?"}
-                          </span>
-                        </div>
-                      </article>
-                    ))}
-                  {stageIndex === 0 && (
-                    <button
-                      className="add-task"
-                      onClick={() => setShowTaskForm(true)}
-                      disabled={!selectedId}
-                    >
-                      + Add task
-                    </button>
-                  )}
                 </div>
-              ),
-            )}
-          </section>
+              </article>
+            ))}
+            {filteredTasks.length === 0 && <p className="empty-state">No tasks yet.</p>}
+          </div>
         </section>
       </main>
       {showProjectForm && (

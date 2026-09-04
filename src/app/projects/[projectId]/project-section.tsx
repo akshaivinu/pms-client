@@ -540,7 +540,7 @@ export default function ProjectSection({
               + Add member
             </button>
           )}
-          {section === "workflow" && canManageWorkflow && (
+          {/* {section === "workflow" && canManageWorkflow && (
             <button
               className="primary-button"
               type="button"
@@ -548,7 +548,7 @@ export default function ProjectSection({
             >
               + Create workflow
             </button>
-          )}
+          )} */}
         </div>
         <nav className="subnav">
           {["overview", "tasks", "members", "workflow", "activity"].map(
