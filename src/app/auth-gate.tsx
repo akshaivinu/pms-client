@@ -10,6 +10,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [checking, setChecking] = useState(true);
+  const [accessDenied, setAccessDenied] = useState(false);
   const isPublic = publicPaths.includes(pathname);
 
   useEffect(() => {
@@ -17,10 +18,15 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
       setChecking(false);
       return;
     }
+    let redirectTimer: number | undefined;
+    const denyAccess = () => {
+      setAccessDenied(true);
+      redirectTimer = window.setTimeout(() => router.replace("/login"), 700);
+    };
     const checkpoint = () => api.auth.me().then((result) => {
       const user = unwrap(result, null) as { role?: string; organization_id?: string } | null;
       if (!user) {
-        router.replace("/login");
+        denyAccess();
         return;
       }
       if (!user.organization_id) {
@@ -39,12 +45,16 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
         return;
       }
       setChecking(false);
-    }).catch(() => router.replace("/login"));
+    }).catch(denyAccess);
     checkpoint();
     const interval = window.setInterval(checkpoint, 30000);
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearInterval(interval);
+      if (redirectTimer) window.clearTimeout(redirectTimer);
+    };
   }, [isPublic, pathname, router]);
 
+  if (accessDenied && !isPublic) return <main className="auth-page"><section className="auth-card"><div className="auth-content"><p className="eyebrow">Access denied</p><h1>You need to sign in.</h1><p className="auth-subtitle">Redirecting you to login...</p></div></section></main>;
   if (checking && !isPublic) return <main className="auth-page"><section className="auth-card"><p className="auth-subtitle">Checking workspace access...</p></section></main>;
   return children;
 }

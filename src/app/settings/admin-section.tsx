@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { api, unwrap } from "../../lib/api";
 
@@ -9,6 +10,7 @@ type User = { role?: string; organization_id?: string; name?: string; email?: st
 type Organization = { name?: string; description?: string; _id?: string; id?: string };
 
 export default function AdminSection({ section }: { section: Section }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [organizationName, setOrganizationName] = useState("");
@@ -36,8 +38,10 @@ export default function AdminSection({ section }: { section: Section }) {
     if (!organizationName.trim()) return;
     try {
       await api.organizations.create({ name: organizationName.trim() });
+      await api.auth.me();
       setCreated(true);
       setOrganizationName("");
+      router.replace("/dashboard");
     } catch (reason) {
       setMessage(reason instanceof Error ? reason.message : "Organization could not be created.");
     }

@@ -17,8 +17,9 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      await api.auth.login({ email, password });
-      router.push("/");
+      await api.auth.login({ email: email.trim().toLowerCase(), password });
+      await api.auth.me();
+      router.push("/dashboard");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to sign in.");
     } finally {
