@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api, unwrap } from "../../lib/api";
+import { logout } from "../../lib/logout";
 
 export default function OrganizationRequiredPage() {
   const router = useRouter();
@@ -28,8 +29,8 @@ export default function OrganizationRequiredPage() {
     const interval = window.setInterval(checkpoint, 30000);
     return () => window.clearInterval(interval);
   }, [router]);
-  async function signOut() {
-    await api.auth.logout().catch(() => undefined);
+  async function handleLogout() {
+    await logout();
     router.replace("/login");
   }
   if (checking)
@@ -72,7 +73,7 @@ export default function OrganizationRequiredPage() {
               Contact your workspace admin and ask them to add your account.
             </p>
           </div>
-          <button className="primary-button auth-submit" onClick={signOut}>
+          <button className="primary-button auth-submit" onClick={handleLogout}>
             Sign out
           </button>
         </div>

@@ -1,2 +1,4 @@
 import ProjectSection from "../project-section";
-export default function ProjectWorkflowPage() { return <ProjectSection section="workflow" />; }
+export default function ProjectWorkflowPage() {
+  return <ProjectSection section="workflow" />;
+}

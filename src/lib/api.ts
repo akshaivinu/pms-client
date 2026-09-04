@@ -1,8 +1,9 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export type ApiResponse<T> =
-  | T
-  | { success?: boolean; data?: T; user?: T; message?: string };
+  T | { success?: boolean; data?: T; user?: T; message?: string };
+
+let isRedirectingToLogin = false;
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
@@ -10,6 +11,17 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     credentials: "include",
     headers: { "Content-Type": "application/json", ...init.headers },
   });
+
+  if (
+    response.status === 401 &&
+    !isRedirectingToLogin &&
+    typeof window !== "undefined"
+  ) {
+    isRedirectingToLogin = true;
+    window.location.href = "/login";
+    throw new Error("Session expired");
+  }
+
   const body = await response.json().catch(() => null);
   if (!response.ok)
     throw new Error(body?.message ?? `Request failed (${response.status})`);
@@ -183,6 +195,8 @@ export const api = {
       patch<ApiResponse<unknown>>(`/labels/${labelId}`, body),
     delete: (labelId: string) =>
       del<ApiResponse<unknown>>(`/labels/${labelId}`),
+    forTask: (taskId: string) =>
+      get<ApiResponse<unknown[]>>(`/tasks/${taskId}/labels`),
     assign: (taskId: string, labelId: string) =>
       post<ApiResponse<unknown>>(`/tasks/${taskId}/labels`, { labelId }),
     remove: (taskId: string, labelId: string) =>

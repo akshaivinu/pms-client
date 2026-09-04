@@ -25,8 +25,10 @@ const projectsSlice = createSlice({
     selectProject: (state, action: PayloadAction<string>) => {
       state.selectedId = action.payload;
     },
+    clearProjects: () => initialState,
   },
 });
 
-export const { setProjects, addProject, selectProject } = projectsSlice.actions;
+export const { setProjects, addProject, selectProject, clearProjects } =
+  projectsSlice.actions;
 export default projectsSlice.reducer;
