@@ -5,21 +5,56 @@ export type ApiResponse<T> =
 
 let isRedirectingToLogin = false;
 
+function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem("auth_token");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setAuthToken(token: string | null) {
+  if (typeof window === "undefined") return;
+  if (token) {
+    localStorage.setItem("auth_token", JSON.stringify(token));
+  } else {
+    localStorage.removeItem("auth_token");
+  }
+}
+
+export function clearAuth() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("user");
+}
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const token = getToken();
+  const authHeaders: Record<string, string> = {};
+  if (token) {
+    authHeaders["Authorization"] = `Bearer ${token}`;
+  }
+
   const response = await fetch(`${API_URL}${path}`, {
     ...init,
     credentials: "include",
-    headers: { "Content-Type": "application/json", ...init.headers },
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders,
+      ...init.headers,
+    },
   });
 
   if (
     response.status === 401 &&
     !isRedirectingToLogin &&
     typeof window !== "undefined" &&
-    !path.startsWith("/auth") &&
-    !path.includes("/auth/me")
+    !path.startsWith("/auth")
   ) {
     isRedirectingToLogin = true;
+    clearAuth();
     window.location.href = "/login";
     throw new Error("Session expired");
   }

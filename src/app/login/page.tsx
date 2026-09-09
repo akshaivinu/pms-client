@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { api } from "../../lib/api";
+import { api, setAuthToken } from "../../lib/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,7 +18,11 @@ export default function LoginPage() {
     setError("");
     try {
       const result = await api.auth.login({ email: email.trim().toLowerCase(), password });
+      const token = (result as Record<string, unknown>)?.token as string | undefined;
       const user = (result as Record<string, unknown>)?.user;
+      if (token) {
+        setAuthToken(token);
+      }
       if (user) {
         localStorage.setItem("user", JSON.stringify(user));
       }
