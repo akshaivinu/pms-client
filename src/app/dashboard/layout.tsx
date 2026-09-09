@@ -24,6 +24,14 @@ export default function DashboardLayout({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as User;
+        dispatch(setUser(parsed));
+      } catch {}
+    }
+
     api.auth
       .me()
       .then((result) => {
@@ -39,8 +47,13 @@ export default function DashboardLayout({
           return;
         }
         dispatch(setUser(current));
+        localStorage.setItem("user", JSON.stringify(current));
       })
-      .catch(() => router.replace("/login"))
+      .catch(() => {
+        if (!stored) {
+          router.replace("/login");
+        }
+      })
       .finally(() => setIsLoading(false));
   }, [dispatch, router]);
 
