@@ -14,13 +14,12 @@ export default function ForgotPasswordPage() {
     <main className="auth-page">
       <div className="auth-aside">
         <Link href="/" className="brand">
-          <span className="brand-mark">P</span>
           <span>
-            pms<span className="brand-dot">.</span>
+            pms
           </span>
         </Link>
         <div className="auth-quote">
-          <span>✦</span>
+          <span>!!</span>
           <p>Nothing important should get lost.</p>
           <small>We&apos;ll help you get back into your workspace.</small>
         </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { api, unwrap } from "../../../lib/api";
+import { api, unwrap } from "@/lib/api";
 
 type RecordItem = Record<string, unknown>;
 const idOf = (item: RecordItem) => String(item._id ?? item.id ?? "");
@@ -481,7 +481,7 @@ export default function ProjectSection({
       return;
     try {
       await api.projects.delete(projectId);
-      router.push("/projects");
+      router.push("/dashboard/projects");
     } catch (reason) {
       setMessage(
         reason instanceof Error ? reason.message : "Could not delete project.",
@@ -496,25 +496,7 @@ export default function ProjectSection({
 
   return (
     <main className="simple-page">
-      <header className="simple-header">
-        <Link href="/dashboard" className="brand">
-          <span className="brand-mark">P</span>
-          <span>
-            pms<span className="brand-dot">.</span>
-          </span>
-        </Link>
-        <nav>
-          <Link href="/dashboard">Dashboard</Link>
-          <Link className="current" href="/projects">
-            Projects
-          </Link>
-          <Link href="/activity">Activity</Link>
-          <Link href="/settings">Settings</Link>
-        </nav>
-        <Link className="outline-button" href="/projects">
-          All projects
-        </Link>
-      </header>
+      
       <section className="simple-content">
         <p className="eyebrow">Project workspace</p>
         <div className="simple-title">
@@ -557,8 +539,8 @@ export default function ProjectSection({
                 className={section === tab ? "selected" : ""}
                 href={
                   tab === "overview"
-                    ? `/projects/${projectId}`
-                    : `/projects/${projectId}/${tab}`
+                    ? `/dashboard/projects/${projectId}`
+                    : `/dashboard/projects/${projectId}/${tab}`
                 }
                 key={tab}
               >
@@ -580,11 +562,11 @@ export default function ProjectSection({
             <div className="panel">
               <h2>Quick actions</h2>
               <div className="quick-links">
-                <Link href={`/projects/${projectId}/tasks`}>View tasks →</Link>
-                <Link href={`/projects/${projectId}/members`}>
+                <Link href={`/dashboard/projects/${projectId}/tasks`}>View tasks →</Link>
+                <Link href={`/dashboard/projects/${projectId}/members`}>
                   View members →
                 </Link>
-                <Link href={`/projects/${projectId}/workflow`}>
+                <Link href={`/dashboard/projects/${projectId}/workflow`}>
                   View workflow →
                 </Link>
               </div>
@@ -913,7 +895,9 @@ export default function ProjectSection({
                 item) as RecordItem;
               const memberUserId = String(userObj._id ?? userObj.id ?? "");
               const currentProjectRole = String(
-                item.project_role ?? "TEAM_MEMBER",
+                (item as { user_id?: RecordItem }).user_id?.role ??
+                (item as RecordItem).project_role ??
+                "TEAM_MEMBER",
               );
               return (
                 <article

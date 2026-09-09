@@ -17,9 +17,12 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      await api.auth.login({ email: email.trim().toLowerCase(), password });
-      await api.auth.me();
-      router.push("/dashboard");
+      const result = await api.auth.login({ email: email.trim().toLowerCase(), password });
+      const user = (result as Record<string, unknown>)?.user;
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      router.push("/dashboard/overview");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to sign in.");
     } finally {
@@ -54,7 +57,7 @@ export default function LoginPage() {
             onChange={(event) => setPassword(event.target.value)}
             required
             minLength={6}
-            placeholder="At least 6 characters"
+            placeholder="Enter your password"
           />
         </label>
         <Link className="forgot-link" href="/forgot-password">
@@ -87,13 +90,12 @@ function AuthFrame({
     <main className="auth-page">
       <div className="auth-aside">
         <Link href="/" className="brand">
-          <span className="brand-mark">P</span>
           <span>
-            pms<span className="brand-dot">.</span>
+            pms
           </span>
         </Link>
         <div className="auth-quote">
-          <span>✦</span>
+          <span>!!</span>
           <p>Make space for the work that matters.</p>
           <small>A calmer project workspace for ambitious teams.</small>
         </div>

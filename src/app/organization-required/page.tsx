@@ -45,13 +45,12 @@ export default function OrganizationRequiredPage() {
     <main className="auth-page">
       <div className="auth-aside">
         <Link href="/" className="brand">
-          <span className="brand-mark">P</span>
           <span>
-            pms<span className="brand-dot">.</span>
+            pms
           </span>
         </Link>
         <div className="auth-quote">
-          <span>✦</span>
+          <span>!!</span>
           <p>Your work starts with a team.</p>
           <small>
             Organization membership is managed by your workspace administrator.

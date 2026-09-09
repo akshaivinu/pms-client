@@ -30,20 +30,19 @@ export default function SettingsPage() {
     <main className="simple-page">
       <header className="simple-header">
         <Link href="/" className="brand">
-          <span className="brand-mark">P</span>
           <span>
-            pms<span className="brand-dot">.</span>
+            pms
           </span>
         </Link>
         <nav>
-          <Link href="/">Overview</Link>
-          <Link href="/projects">Projects</Link>
-          <Link href="/activity">Activity</Link>
+          <Link href="/dashboard/overview">Overview</Link>
+          <Link href="/dashboard/projects">Projects</Link>
+          <Link href="/dashboard/activity">Activity</Link>
           <Link className="current" href="/settings">
             Settings
           </Link>
         </nav>
-        <Link className="outline-button" href="/">
+        <Link className="outline-button" href="/dashboard/overview">
           Back to workspace
         </Link>
       </header>
@@ -91,7 +90,7 @@ export default function SettingsPage() {
             <div className="quick-links">
               <Link href="/settings/organization">Organization →</Link>
               <Link href="/settings/users">Users →</Link>
-              <Link href="/settings/roles">Roles →</Link>
+              {/*<Link href="/settings/roles">Roles →</Link>*/}
               <Link href="/settings/labels">Labels →</Link>
             </div>
           </section>

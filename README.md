@@ -11,7 +11,8 @@ npm install
 
 2. Create `.env.local` file:
 ```
-NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_API_URL=https://pms-server-11ni.onrender.com
+
 ```
 
 3. Run the development server:

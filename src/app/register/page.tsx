@@ -10,13 +10,38 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const validatePassword = (pwd: string): string[] => {
+    const errors: string[] = [];
+    if (pwd.length < 8) {
+      errors.push("At least 8 characters");
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)) {
+      errors.push("At least one special character (!@#$%^&* etc.)");
+    }
+    return errors;
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    setPasswordErrors(validatePassword(value));
+  };
 
   async function submit(event: FormEvent) {
     event.preventDefault();
     setLoading(true);
     setError("");
+
+    const errors = validatePassword(password);
+    if (errors.length > 0) {
+      setPasswordErrors(errors);
+      setLoading(false);
+      return;
+    }
+
     try {
       await api.auth.register({ name, email, password });
       router.push("/login");
@@ -35,13 +60,12 @@ export default function RegisterPage() {
     <main className="auth-page">
       <div className="auth-aside">
         <Link href="/" className="brand">
-          <span className="brand-mark">P</span>
           <span>
-            pms<span className="brand-dot">.</span>
+            pms
           </span>
         </Link>
         <div className="auth-quote">
-          <span>✦</span>
+          <span>!!</span>
           <p>Build momentum, together.</p>
           <small>Bring projects, people, and priorities into one place.</small>
         </div>
@@ -81,14 +105,25 @@ export default function RegisterPage() {
                 type="password"
                 autoComplete="new-password"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) => handlePasswordChange(event.target.value)}
                 required
-                minLength={6}
-                placeholder="At least 6 characters"
+                placeholder="At least 8 characters with special character"
               />
+              {password.length > 0 && passwordErrors.length > 0 && (
+                <div className="mt-1">
+                  {passwordErrors.map((err, i) => (
+                    <p key={i} className="text-xs text-red-500">
+                      {err}
+                    </p>
+                  ))}
+                </div>
+              )}
             </label>
             {error && <p className="form-error">{error}</p>}
-            <button className="primary-button auth-submit" disabled={loading}>
+            <button
+              className="primary-button auth-submit"
+              disabled={loading || passwordErrors.length > 0}
+            >
               {loading ? "Creating account..." : "Create account"}
             </button>
             <p className="auth-switch">

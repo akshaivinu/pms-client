@@ -172,15 +172,14 @@ export default function AdminSection({ section }: { section: Section }) {
     <main className="simple-page">
       <header className="simple-header">
         <Link href="/dashboard" className="brand">
-          <span className="brand-mark">P</span>
           <span>
-            pms<span className="brand-dot">.</span>
+            pms
           </span>
         </Link>
         <nav>
-          <Link href="/dashboard">Dashboard</Link>
-          <Link href="/projects">Projects</Link>
-          <Link href="/activity">Activity</Link>
+          <Link href="/dashboard/overview">Dashboard</Link>
+          <Link href="/dashboard/projects">Projects</Link>
+          <Link href="/dashboard/activity">Activity</Link>
           <Link className="current" href="/settings">
             Settings
           </Link>
@@ -206,12 +205,12 @@ export default function AdminSection({ section }: { section: Section }) {
             >
               Users
             </Link>
-            <Link
+            {/*<Link
               className={section === "roles" ? "selected" : ""}
               href="/settings/roles"
             >
               Roles
-            </Link>
+            </Link>*/}
           </nav>
         )}
 
@@ -401,7 +400,6 @@ export default function AdminSection({ section }: { section: Section }) {
                       >
                         <option value="member">Member</option>
                         <option value="manager">Manager</option>
-                        <option value="admin">Admin</option>
                       </select>
                     </label>
                     {!isSelf && (

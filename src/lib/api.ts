@@ -15,7 +15,8 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (
     response.status === 401 &&
     !isRedirectingToLogin &&
-    typeof window !== "undefined"
+    typeof window !== "undefined" &&
+    !path.startsWith("/auth")
   ) {
     isRedirectingToLogin = true;
     window.location.href = "/login";

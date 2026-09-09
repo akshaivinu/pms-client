@@ -227,6 +227,7 @@ button {
   padding: 17px 4px 0;
   display: flex;
   align-items: center;
+  padding-bottom: 1rem;
   gap: 9px;
 }
 .sidebar-footer strong {

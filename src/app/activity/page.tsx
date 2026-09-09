@@ -22,25 +22,6 @@ export default function ActivityPage() {
   }, []);
   return (
     <main className="simple-page">
-      <header className="simple-header">
-        <Link href="/" className="brand">
-          <span className="brand-mark">P</span>
-          <span>
-            pms<span className="brand-dot">.</span>
-          </span>
-        </Link>
-        <nav>
-          <Link href="/">Overview</Link>
-          <Link href="/projects">Projects</Link>
-          <Link className="current" href="/activity">
-            Activity
-          </Link>
-          <Link href="/settings">Settings</Link>
-        </nav>
-        <Link className="outline-button" href="/">
-          Back to workspace
-        </Link>
-      </header>
       <section className="simple-content narrow">
         <p className="eyebrow">Workspace pulse</p>
         <h1>Activity</h1>
