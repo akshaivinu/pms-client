@@ -91,7 +91,7 @@ export default function DashboardLayout({
         user={user ?? null}
         taskCount={tasks.length}
       />
-      <main className="flex-1 overflow-auto bg-[#f6dc9b]/10">{children}</main>
+      <main className="flex-1 overflow-auto bg-[#f6dc9b]/10 pt-14 lg:pt-0">{children}</main>
     </div>
   );
 }

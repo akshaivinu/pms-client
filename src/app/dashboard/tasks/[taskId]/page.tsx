@@ -220,21 +220,21 @@ export default function TaskDetailPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 bg-[#f6dc9b]/10">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+    <div className="p-4 md:p-6 space-y-6 bg-[#f6dc9b]/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4 min-w-0">
           <Link
             href="/dashboard/tasks"
-            className="text-muted hover:text-ink transition-colors"
+            className="text-muted hover:text-ink transition-colors flex-shrink-0"
           >
             ← Back
           </Link>
-          <h1 className="text-2xl font-bold text-black">
+          <h1 className="text-lg md:text-2xl font-bold text-black truncate">
             {isEditing ? (
               <Input
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
-                className="text-2xl font-bold"
+                className="text-lg md:text-2xl font-bold"
               />
             ) : (
               task.title
@@ -242,7 +242,7 @@ export default function TaskDetailPage() {
           </h1>
         </div>
         {canManage && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-shrink-0">
             {isEditing ? (
               <>
                 <Button variant="outline" onClick={() => setIsEditing(false)}>

@@ -30,6 +30,7 @@ export default function ProjectSection({
   const [taskPriority, setTaskPriority] = useState("medium");
   const [taskDueDate, setTaskDueDate] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
+  const [isAddingMember, setIsAddingMember] = useState(false);
   const [workflowName, setWorkflowName] = useState("");
   const [stageName, setStageName] = useState("");
   const [editingStageId, setEditingStageId] = useState("");
@@ -135,6 +136,8 @@ export default function ProjectSection({
       .catch(() => setMembers([]));
   }, [projectId, section]);
 
+  console.log(items)
+
   useEffect(() => {
     if (!projectId || section !== "tasks" || items.length === 0) return;
     const depCounts: Record<string, number> = {};
@@ -188,7 +191,8 @@ export default function ProjectSection({
 
   async function addMember(event: FormEvent) {
     event.preventDefault();
-    if (!projectId || !memberEmail.trim()) return;
+    if (!projectId || !memberEmail.trim() || isAddingMember) return;
+    setIsAddingMember(true);
     try {
       const result = await api.projects.addMember(projectId, {
         email: memberEmail.trim(),
@@ -206,6 +210,8 @@ export default function ProjectSection({
       } else {
         setMessage(errorMessage);
       }
+    } finally {
+      setIsAddingMember(false);
     }
   }
 
@@ -1075,8 +1081,8 @@ export default function ProjectSection({
                 placeholder="member@gmail.com"
               />
             </label>
-            <button className="primary-button" type="submit">
-              Add member
+            <button className="primary-button" type="submit" disabled={isAddingMember}>
+              {isAddingMember ? "Adding..." : "Add member"}
             </button>
           </form>
         </div>

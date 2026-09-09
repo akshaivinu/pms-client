@@ -1255,6 +1255,11 @@ button {
   .simple-header {
     padding: 0 18px;
     gap: 12px;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 56px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
   .simple-header nav {
     display: none;
@@ -1262,12 +1267,16 @@ button {
   .simple-content {
     padding: 42px 18px;
   }
+  .simple-content h1 {
+    font-size: 28px;
+  }
   .simple-title {
     display: block;
     margin-bottom: 30px;
   }
   .inline-form {
     margin-top: 25px;
+    flex-direction: column;
   }
   .inline-form input {
     flex: 1;
@@ -1275,6 +1284,9 @@ button {
   }
   .project-grid {
     grid-template-columns: 1fr;
+  }
+  .settings-panel {
+    max-width: 100%;
   }
 }
 .subnav {

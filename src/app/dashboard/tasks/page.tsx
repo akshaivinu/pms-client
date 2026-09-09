@@ -130,11 +130,11 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink">Tasks</h1>
-          <p className="text-muted mt-1">
+          <h1 className="text-xl md:text-2xl font-bold text-ink">Tasks</h1>
+          <p className="text-muted mt-1 text-sm">
             {filteredTasks.length} tasks
             {selectedProject && ` in ${selectedProject.name}`}
           </p>
@@ -146,19 +146,19 @@ export default function TasksPage() {
         )}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
         <Select
           value={selectedId ?? ""}
           onChange={(e) => handleProjectChange(e.target.value)}
           options={projectOptions}
           placeholder="Select a project"
-          className="max-w-xs"
+          className="w-full sm:max-w-xs"
         />
         <Input
           placeholder="Search tasks..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="max-w-md"
+          className="w-full sm:max-w-md"
         />
       </div>
 

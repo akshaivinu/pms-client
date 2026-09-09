@@ -122,15 +122,15 @@ export default function OverviewPage() {
   };
   const greetingEmoji = generateGreetingEmoji();
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-ink">
+        <h1 className="text-xl md:text-2xl font-bold text-ink">
           {greets}, {user?.name ?? "there"} {greetingEmoji}
         </h1>
-        <p className="text-muted mt-1">Here&apos;s the pulse of your workspace.</p>
+        <p className="text-muted mt-1 text-sm md:text-base">Here&apos;s the pulse of your workspace.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card variant="bordered" className="bg-purple-100/60!">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted">
@@ -138,7 +138,7 @@ export default function OverviewPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-ink">{projects.length}</p>
+            <p className="text-2xl md:text-3xl font-bold text-ink">{projects.length}</p>
           </CardContent>
         </Card>
 
@@ -149,7 +149,7 @@ export default function OverviewPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-ink">{summary.totalTasks}</p>
+            <p className="text-2xl md:text-3xl font-bold text-ink">{summary.totalTasks}</p>
           </CardContent>
         </Card>
 
@@ -160,7 +160,7 @@ export default function OverviewPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-red-600">
+            <p className="text-2xl md:text-3xl font-bold text-red-600">
               {summary.overdueTasks}
             </p>
           </CardContent>
@@ -170,7 +170,6 @@ export default function OverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card variant="bordered">
           <CardHeader className="flex flex-col justify-between">
-            
             <CardTitle>Recent Activity</CardTitle>
             <p className="text-xs">Updates from your organization</p>
           </CardHeader>
@@ -188,14 +187,14 @@ export default function OverviewPage() {
                     key={item._id ?? index}
                     className="flex items-center justify-between py-2 border-b border-gray-300 last:border-0"
                   >
-                    <div className="flex items-center gap-4">
-                      <p>🔔</p>
-                      <div>
-                      <p className="text-sm text-ink">{item.message}</p>
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <p className="hidden sm:block">🔔</p>
+                      <div className="min-w-0">
+                        <p className="text-sm text-ink truncate">{item.message}</p>
                         <p className="text-xs text-muted">{item.userName}</p>
                       </div>
                     </div>
-                    <Badge variant="success">{item.action}</Badge>
+                    <Badge variant="success" className="hidden sm:inline-flex">{item.action}</Badge>
                   </div>
                 ))}
               </div>
@@ -227,27 +226,25 @@ export default function OverviewPage() {
                       router.push(`/dashboard/projects/${project._id}`)
                     }}
                   >
-                    <div className="flex items-center gap-5">
-                      <div  className={`size-12 ${
+                    <div className="flex items-center gap-3 md:gap-5">
+                      <div className={`size-10 md:size-12 ${
                          projectColors[index % projectColors.length]
                        } inline-flex items-center justify-center rounded-lg shadow-2xl`}>
-                        <p className="font-bold text-[18px]">{project.name.slice(0, 1)}</p>
+                        <p className="font-bold text-sm md:text-[18px]">{project.name.slice(0, 1)}</p>
                       </div>
-                      <div>
-                      <p className="text-sm font-medium text-ink">
-                        {project.name}
-                      </p>
-                      {project.description && (
-                        <p className="text-[10px] text-muted mt-1 line-clamp-1">
-                          {project.description}
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-ink truncate">
+                          {project.name}
                         </p>
+                        {project.description && (
+                          <p className="text-[10px] text-muted mt-1 line-clamp-1">
+                            {project.description}
+                          </p>
                         )}
-                        </div>
+                      </div>
                     </div>
                     <div className="group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 opacity-0 -translate-x-10">
-                      <p>
-                        →
-                      </p>
+                      <p>→</p>
                     </div>
                   </div>
                 ))}

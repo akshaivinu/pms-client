@@ -96,11 +96,11 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink">Projects</h1>
-          <p className="text-muted mt-1">{projects.length} projects</p>
+          <h1 className="text-xl md:text-2xl font-bold text-ink">Projects</h1>
+          <p className="text-muted mt-1 text-sm">{projects.length} projects</p>
         </div>
         <Button onClick={() => setIsAdding(true)}>+ New Project</Button>
       </div>
